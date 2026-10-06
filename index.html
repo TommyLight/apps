@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#eafbf3">
+  <meta name="description" content="血压血糖本：让血压、血糖记录变得简单、清楚、可持续。">
+  <title>血压血糖本 — 把健康记录，变成每天的小习惯</title>
+  <style>
+    :root {
+      --ink: #092b2b;
+      --ink-soft: #426264;
+      --green: #007d62;
+      --green-deep: #005d4d;
+      --mint: #d7f8e9;
+      --mint-strong: #b4f0d7;
+      --paper: #ffffff;
+      --line: rgba(0, 72, 56, .11);
+      --shadow: 0 22px 60px rgba(0, 90, 66, .12);
+      --radius-lg: 32px;
+      --radius-md: 22px;
+      --max: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 6%, rgba(179, 243, 214, .7), transparent 23rem),
+        radial-gradient(circle at 94% 21%, rgba(210, 247, 231, .9), transparent 28rem),
+        #f7fffb;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Helvetica Neue", sans-serif;
+      line-height: 1.5;
+    }
+    body.modal-open { overflow: hidden; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+
+    .shell { width: min(calc(100% - 48px), var(--max)); margin: 0 auto; }
+    .site-header {
+      position: relative;
+      z-index: 10;
+      padding: 22px 0;
+    }
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 28px;
+    }
+    .brand { display: inline-flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: -.04em; }
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      padding: 5px;
+      border-radius: 13px;
+      object-fit: cover;
+      box-shadow: 0 8px 18px rgba(0, 90, 66, .16);
+    }
+    .brand-name { font-size: 19px; }
+    .brand-kicker { display: block; color: var(--ink-soft); font-size: 11px; font-weight: 600; letter-spacing: .08em; }
+    .nav-links { display: flex; align-items: center; gap: 30px; color: var(--ink-soft); font-size: 14px; font-weight: 700; }
+    .nav-links a { transition: color .2s ease; }
+    .nav-links a:hover { color: var(--green); }
+    .nav-cta { display: inline-flex; align-items: center; gap: 7px; color: var(--green-deep); font-weight: 800; }
+    .nav-cta span { font-size: 18px; transition: transform .2s ease; }
+    .nav-cta:hover span { transform: translateX(4px); }
+    .menu-button { display: none; border: 0; background: transparent; color: var(--ink); cursor: pointer; font-size: 25px; }
+
+    .hero {
+      position: relative;
+      min-height: 720px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.02fr) minmax(380px, .98fr);
+      align-items: center;
+      gap: 50px;
+      padding: 58px 0 96px;
+      overflow: visible;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      width: 500px;
+      height: 500px;
+      top: 80px;
+      right: 7%;
+      border-radius: 50%;
+      background: rgba(214, 250, 233, .74);
+      filter: blur(2px);
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 22px;
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .08em;
+    }
+    .eyebrow::before { content: ""; width: 28px; height: 2px; border-radius: 4px; background: var(--green); }
+    h1, h2, h3, p { margin-top: 0; }
+    .hero h1 {
+      max-width: 680px;
+      margin-bottom: 24px;
+      font-size: clamp(48px, 6.4vw, 82px);
+      line-height: 1.08;
+      letter-spacing: -.075em;
+    }
+    .hero h1 em { color: var(--green); font-style: normal; }
+    .hero-copy { max-width: 550px; color: var(--ink-soft); font-size: 18px; line-height: 1.9; }
+    .hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; margin-top: 34px; }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 50px;
+      padding: 0 22px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 800;
+      transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+    .button:hover { transform: translateY(-2px); }
+    .button-primary { color: #fff; background: var(--green-deep); box-shadow: 0 12px 24px rgba(0, 93, 77, .2); }
+    .button-primary:hover { box-shadow: 0 16px 32px rgba(0, 93, 77, .27); }
+    .button-secondary { color: var(--green-deep); background: rgba(255,255,255,.7); border-color: rgba(0, 93, 77, .2); }
+    .hero-note { display: flex; align-items: center; gap: 9px; margin-top: 22px; color: #71908c; font-size: 12px; }
+    .hero-note i { width: 7px; height: 7px; border-radius: 50%; background: #34b986; box-shadow: 0 0 0 5px rgba(52,185,134,.12); }
+
+    .device-stage { position: relative; display: grid; place-items: center; min-height: 620px; }
+    .device-stage::after {
+      content: "";
+      position: absolute;
+      width: 290px;
+      height: 42px;
+      bottom: 22px;
+      border-radius: 50%;
+      background: rgba(0, 88, 70, .2);
+      filter: blur(22px);
+    }
+    .phone {
+      position: relative;
+      z-index: 1;
+      width: min(340px, 78vw);
+      padding: 10px;
+      border: 8px solid #073e36;
+      border-radius: 45px;
+      background: #0b463d;
+      box-shadow: 0 28px 70px rgba(0, 75, 58, .28), 0 5px 10px rgba(4, 52, 46, .18);
+      transform: rotate(2.2deg);
+    }
+    .phone::before { content: ""; position: absolute; top: 9px; left: 50%; z-index: 2; width: 96px; height: 22px; border-radius: 20px; background: #052d29; transform: translateX(-50%); }
+    .phone-screen { display: block; width: 100%; border-radius: 33px; vertical-align: middle; }
+    .float-card {
+      position: absolute;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 12px 16px 12px 12px;
+      border: 1px solid rgba(255,255,255,.72);
+      border-radius: 18px;
+      background: rgba(255,255,255,.82);
+      box-shadow: 0 17px 34px rgba(0, 88, 68, .13);
+      backdrop-filter: blur(14px);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .float-card strong { display: block; font-size: 18px; line-height: 1.1; }
+    .float-card small { display: block; margin-top: 3px; color: var(--ink-soft); font-size: 11px; font-weight: 700; }
+    .float-icon { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 12px; color: var(--green); background: var(--mint); font-size: 18px; }
+    .float-top { top: 16%; right: -2%; }
+    .float-bottom { bottom: 15%; left: -2%; }
+
+    .signal-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: -18px; position: relative; z-index: 2; }
+    .signal {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-height: 88px;
+      padding: 17px 20px;
+      border: 1px solid rgba(0, 93, 77, .08);
+      border-radius: 21px;
+      background: rgba(255,255,255,.78);
+      box-shadow: 0 14px 36px rgba(0, 90, 66, .07);
+    }
+    .signal-icon { display: grid; place-items: center; width: 42px; height: 42px; flex: 0 0 42px; border-radius: 14px; color: var(--green); background: var(--mint); font-size: 20px; }
+    .signal strong { display: block; font-size: 15px; }
+    .signal span { display: block; margin-top: 2px; color: var(--ink-soft); font-size: 12px; }
+
+    .section { padding: 138px 0 0; }
+    .section-heading { max-width: 680px; margin-bottom: 44px; }
+    .section-heading h2 { margin-bottom: 14px; font-size: clamp(35px, 4vw, 55px); line-height: 1.1; letter-spacing: -.065em; }
+    .section-heading p { color: var(--ink-soft); font-size: 17px; line-height: 1.8; }
+    .section-heading.center { margin-right: auto; margin-left: auto; text-align: center; }
+    .section-heading.center .eyebrow { justify-content: center; }
+
+    .story-grid { display: grid; grid-template-columns: .85fr 1.15fr; gap: 28px; align-items: stretch; }
+    .story-panel { padding: 34px; border-radius: var(--radius-lg); background: var(--green-deep); color: #fff; overflow: hidden; }
+    .story-panel h3 { max-width: 390px; margin-bottom: 18px; font-size: 31px; line-height: 1.2; letter-spacing: -.05em; }
+    .story-panel p { max-width: 390px; color: rgba(255,255,255,.73); line-height: 1.8; }
+    .story-points { display: grid; gap: 17px; margin: 38px 0 0; padding: 0; list-style: none; }
+    .story-points li { display: flex; gap: 11px; align-items: flex-start; color: rgba(255,255,255,.9); font-size: 14px; }
+    .story-points li::before { content: "✓"; display: grid; place-items: center; width: 19px; height: 19px; flex: 0 0 19px; border-radius: 50%; color: var(--green-deep); background: var(--mint-strong); font-size: 12px; font-weight: 900; }
+    .story-visual { position: relative; min-height: 430px; padding: 30px; border-radius: var(--radius-lg); background: linear-gradient(135deg, #effff7, #d9f6e8); overflow: hidden; }
+    .story-visual::before, .story-visual::after { content: ""; position: absolute; border-radius: 50%; background: rgba(255,255,255,.55); }
+    .story-visual::before { width: 320px; height: 320px; top: -150px; right: -70px; }
+    .story-visual::after { width: 240px; height: 240px; bottom: -150px; left: -70px; }
+    .mini-dashboard { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: end; height: 100%; }
+    .mini-copy { grid-column: 1 / -1; padding: 8px 0; }
+    .mini-copy h3 { margin: 0; font-size: 25px; letter-spacing: -.05em; }
+    .mini-copy p { margin: 6px 0 0; color: var(--ink-soft); font-size: 13px; }
+    .metric-card { padding: 20px; border: 1px solid rgba(0, 93, 77, .08); border-radius: 20px; background: rgba(255,255,255,.82); box-shadow: 0 12px 25px rgba(0, 90, 66, .08); }
+    .metric-card h4 { margin: 0 0 11px; color: var(--ink-soft); font-size: 12px; }
+    .metric-number { font-size: 30px; font-weight: 850; letter-spacing: -.06em; }
+    .metric-unit { color: var(--ink-soft); font-size: 12px; }
+    .chart { display: flex; align-items: end; gap: 7px; height: 42px; margin-top: 18px; }
+    .chart b { width: 10px; border-radius: 9px 9px 2px 2px; background: linear-gradient(#4dc998, #007d62); }
+    .chart b:nth-child(1) { height: 46%; }.chart b:nth-child(2) { height: 65%; }.chart b:nth-child(3) { height: 54%; }.chart b:nth-child(4) { height: 82%; }.chart b:nth-child(5) { height: 71%; }.chart b:nth-child(6) { height: 93%; }
+
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 17px; }
+    .feature { min-height: 245px; padding: 28px; border: 1px solid var(--line); border-radius: var(--radius-md); background: rgba(255,255,255,.72); }
+    .feature-number { color: var(--green); font-size: 13px; font-weight: 900; letter-spacing: .1em; }
+    .feature h3 { margin: 33px 0 10px; font-size: 22px; letter-spacing: -.04em; }
+    .feature p { color: var(--ink-soft); font-size: 14px; line-height: 1.8; }
+
+    .preview-section { padding-bottom: 150px; }
+    .preview-grid { display: grid; grid-template-columns: 1.12fr .88fr; gap: 28px; align-items: center; }
+    .preview-copy { padding: 20px 0; }
+    .preview-copy h2 { max-width: 480px; margin-bottom: 17px; font-size: clamp(35px, 4vw, 56px); line-height: 1.1; letter-spacing: -.07em; }
+    .preview-copy p { max-width: 480px; color: var(--ink-soft); line-height: 1.9; }
+    .preview-list { display: grid; gap: 13px; margin: 28px 0 33px; padding: 0; list-style: none; }
+    .preview-list li { display: flex; align-items: center; gap: 11px; color: var(--ink-soft); font-size: 14px; }
+    .preview-list li::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 5px rgba(0,125,98,.1); }
+    .preview-art { position: relative; min-height: 560px; display: grid; place-items: center; border-radius: var(--radius-lg); background: linear-gradient(140deg, #d7f9e8, #eefef5); overflow: hidden; }
+    .preview-art::before { content: ""; position: absolute; width: 450px; height: 450px; border: 1px solid rgba(0, 125, 98, .12); border-radius: 50%; box-shadow: 0 0 0 55px rgba(255,255,255,.22), 0 0 0 110px rgba(255,255,255,.12); }
+    .preview-phone { position: relative; z-index: 1; width: min(280px, 72%); padding: 8px; border: 6px solid #0a4a3f; border-radius: 35px; background: #0a4a3f; box-shadow: 0 28px 48px rgba(0, 90, 66, .2); transform: rotate(-4deg); }
+    .preview-phone img { display: block; width: 100%; border-radius: 26px; }
+    .preview-label { position: absolute; z-index: 2; right: 9%; bottom: 17%; padding: 11px 15px; border-radius: 14px; background: rgba(255,255,255,.82); box-shadow: 0 12px 25px rgba(0, 90, 66, .1); color: var(--green-deep); font-size: 12px; font-weight: 800; backdrop-filter: blur(10px); }
+
+    .cta { position: relative; margin-bottom: 60px; padding: 66px 70px; border-radius: 34px; background: linear-gradient(110deg, #006f5a, #004d46); color: #fff; overflow: hidden; }
+    .cta::after { content: ""; position: absolute; width: 370px; height: 370px; right: -70px; top: -190px; border: 1px solid rgba(255,255,255,.18); border-radius: 50%; box-shadow: 0 0 0 55px rgba(255,255,255,.05), 0 0 0 110px rgba(255,255,255,.04); }
+    .cta h2 { position: relative; z-index: 1; max-width: 620px; margin-bottom: 14px; font-size: clamp(35px, 4.5vw, 56px); line-height: 1.1; letter-spacing: -.07em; }
+    .cta p { position: relative; z-index: 1; max-width: 520px; margin-bottom: 28px; color: rgba(255,255,255,.73); line-height: 1.8; }
+    .cta .button-primary { color: var(--green-deep); background: #d5f8e6; box-shadow: none; }
+    .site-footer { padding: 0 0 30px; color: var(--ink-soft); font-size: 12px; }
+    .footer-line { display: flex; justify-content: space-between; gap: 20px; padding-top: 22px; border-top: 1px solid var(--line); }
+
+    .modal { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 24px; background: rgba(5, 35, 31, .58); opacity: 0; pointer-events: none; transition: opacity .25s ease; }
+    .modal.is-open { opacity: 1; pointer-events: auto; }
+    .modal-card { position: relative; width: min(930px, 100%); max-height: min(820px, 92vh); padding: 17px; overflow: auto; border-radius: 28px; background: #effdf6; transform: translateY(15px) scale(.98); transition: transform .25s ease; }
+    .modal.is-open .modal-card { transform: translateY(0) scale(1); }
+    .modal-close { position: absolute; z-index: 2; top: 18px; right: 18px; display: grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 50%; color: var(--ink); background: rgba(255,255,255,.82); cursor: pointer; font-size: 23px; }
+    .modal-title { margin: 6px 55px 16px 10px; font-size: 22px; letter-spacing: -.04em; }
+    .preview-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 13px; }
+    .preview-option { border: 0; padding: 8px; border-radius: 18px; background: #fff; cursor: pointer; text-align: left; }
+    .preview-option img { display: block; width: 100%; height: 210px; object-fit: cover; object-position: top; border-radius: 13px; }
+    .preview-option span { display: block; padding: 10px 4px 3px; color: var(--ink); font-size: 13px; font-weight: 800; }
+
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; min-height: auto; padding-top: 42px; }
+      .hero-copy { max-width: 650px; }
+      .device-stage { min-height: 570px; margin-top: -16px; }
+      .story-grid, .preview-grid { grid-template-columns: 1fr; }
+      .story-visual { min-height: 360px; }
+      .preview-art { min-height: 510px; order: -1; }
+    }
+    @media (max-width: 680px) {
+      .shell { width: min(calc(100% - 32px), var(--max)); }
+      .site-header { padding-top: 16px; }
+      .nav-links { position: absolute; top: 74px; left: 16px; right: 16px; display: none; flex-direction: column; align-items: stretch; gap: 0; padding: 10px; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,255,255,.94); box-shadow: var(--shadow); }
+      .nav-links.is-open { display: flex; }
+      .nav-links a { padding: 12px; }
+      .nav-cta { justify-content: space-between; }
+      .menu-button { display: block; }
+      .hero { gap: 10px; padding-bottom: 55px; }
+      .hero h1 { font-size: clamp(45px, 14vw, 66px); }
+      .hero-copy { font-size: 16px; line-height: 1.8; }
+      .device-stage { min-height: 510px; }
+      .phone { width: min(310px, 79vw); }
+      .float-top { right: -3%; top: 14%; }
+      .float-bottom { left: -3%; bottom: 13%; }
+      .signal-row, .feature-grid { grid-template-columns: 1fr; }
+      .signal { min-height: 76px; }
+      .section { padding-top: 95px; }
+      .story-panel, .story-visual { padding: 25px; }
+      .story-visual { min-height: 350px; }
+      .preview-art { min-height: 430px; }
+      .preview-phone { width: min(250px, 68%); }
+      .cta { padding: 42px 26px; border-radius: 27px; }
+      .footer-line { flex-direction: column; gap: 8px; }
+      .preview-options { grid-template-columns: 1fr; }
+      .preview-option { display: grid; grid-template-columns: 110px 1fr; gap: 8px; align-items: center; }
+      .preview-option img { height: 150px; }
+      .preview-option span { padding: 0 4px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="shell nav">
+      <a class="brand" href="#top" aria-label="血压血糖本首页">
+        <img class="brand-mark" src="healthnote/Assets.xcassets/AppIcon.appiconset/app-icon.png" alt="">
+        <span><span class="brand-name">血压血糖本</span><span class="brand-kicker">HEALTH NOTE</span></span>
+      </a>
+      <button class="menu-button" aria-label="打开菜单" aria-expanded="false">☰</button>
+      <nav class="nav-links" aria-label="主导航">
+        <a href="#why">为什么记录</a>
+        <a href="#flow">记录流程</a>
+        <a href="#preview">产品预览</a>
+        <a class="nav-cta" href="#start">开始了解 <span>↗</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="shell hero">
+      <div class="hero-content">
+        <p class="eyebrow">每天一点点，掌握身体的节奏</p>
+        <h1>把血压与血糖，<em>记成</em>一件简单的事。</h1>
+        <p class="hero-copy">血压血糖本，为家庭成员留下一份清楚、连续、随时可回看的健康记录。少一点复杂操作，多一点对身体的了解。</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#preview">看看产品界面</a>
+          <a class="button button-secondary" href="#why">了解记录方式 <span aria-hidden="true">　→</span></a>
+        </div>
+        <p class="hero-note"><i></i> 原生体验 · 本地保存 · 为日常记录而设计</p>
+      </div>
+
+      <div class="device-stage" aria-label="首页产品预览">
+        <div class="float-card float-top">
+          <span class="float-icon">⌁</span>
+          <span><strong>118 / 76</strong><small>今日血压 · 状态正常</small></span>
+        </div>
+        <div class="phone">
+          <img class="phone-screen" src="UI_DESIGN/Home-screenshot.png" alt="血压血糖本首页：按日期展示血压和血糖记录">
+        </div>
+        <div class="float-card float-bottom">
+          <span class="float-icon">✦</span>
+          <span><strong>7.2</strong><small>早餐前血糖 · 一目了然</small></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="shell signal-row" aria-label="产品特点">
+      <div class="signal"><span class="signal-icon">⌁</span><span><strong>记录够快</strong><span>打开就能记，不打断生活</span></span></div>
+      <div class="signal"><span class="signal-icon">◌</span><span><strong>信息够清楚</strong><span>数值、场景、备注一目了然</span></span></div>
+      <div class="signal"><span class="signal-icon">↗</span><span><strong>回看有依据</strong><span>按成员和时间整理趋势</span></span></div>
+    </section>
+
+    <section class="shell section" id="why">
+      <div class="section-heading">
+        <p class="eyebrow">不是堆功能，而是减少负担</p>
+        <h2>当记录变简单，<br>坚持就会自然发生。</h2>
+        <p>为家人记录健康数据，最重要的不是填满表格，而是每一次测量都能被准确留下，并在需要时快速找到。</p>
+      </div>
+      <div class="story-grid">
+        <article class="story-panel">
+          <h3>一部手机，照顾全家的日常数据。</h3>
+          <p>从成员切换到记录，再到趋势回看，每一步都围绕“少操作、少打扰、看得懂”展开。</p>
+          <ul class="story-points">
+            <li>为不同成员分别保存记录</li>
+            <li>血压、心率与血糖统一管理</li>
+            <li>测量场景与备注一起留下</li>
+          </ul>
+        </article>
+        <div class="story-visual">
+          <div class="mini-dashboard">
+            <div class="mini-copy"><h3>今天的状态，清清楚楚。</h3><p>记录之后，回看不需要重新整理。</p></div>
+            <div class="metric-card"><h4>血压趋势</h4><span class="metric-number">118 / 76</span><span class="metric-unit">　mmHg</span><div class="chart"><b></b><b></b><b></b><b></b><b></b><b></b></div></div>
+            <div class="metric-card"><h4>空腹血糖</h4><span class="metric-number">7.2</span><span class="metric-unit">　mmol/L</span><div class="chart"><b></b><b></b><b></b><b></b><b></b><b></b></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="shell section" id="flow">
+      <div class="section-heading center">
+        <p class="eyebrow">从一次测量，到一份长期线索</p>
+        <h2>记录的每一步，<br>都刚刚好。</h2>
+        <p>不要求你改变生活，只把已经发生的测量，变成未来有用的信息。</p>
+      </div>
+      <div class="feature-grid">
+        <article class="feature"><span class="feature-number">01 / 记录</span><h3>输入核心数值</h3><p>血压支持收缩压、舒张压和心率；血糖支持测量场景。常用字段放在最前面。</p></article>
+        <article class="feature"><span class="feature-number">02 / 补充</span><h3>留下当时的上下文</h3><p>来自哪位成员、什么时候测量、有没有备注，都可以一起保存，避免日后只剩一个数字。</p></article>
+        <article class="feature"><span class="feature-number">03 / 回看</span><h3>看见变化，而不只是结果</h3><p>按时间、类型和成员筛选记录，在报告里找到趋势，也能把需要的信息导出分享。</p></article>
+      </div>
+    </section>
+
+    <section class="shell section preview-section" id="preview">
+      <div class="preview-grid">
+        <div class="preview-copy">
+          <p class="eyebrow">产品预览</p>
+          <h2>每天打开一次，<br>就知道该看什么。</h2>
+          <p>首页给你当天最重要的记录，报告页把一段时间里的变化放在一起。清爽的界面，让家人也能很快上手。</p>
+          <ul class="preview-list">
+            <li>首页按日期聚合，最近记录不费力</li>
+            <li>报告支持表格与统计两种视角</li>
+            <li>支持复制、保存图片与 PDF 分享</li>
+          </ul>
+          <button class="button button-primary" data-open-preview>浏览更多界面</button>
+        </div>
+        <div class="preview-art">
+          <div class="preview-phone"><img src="UI_DESIGN/Home-screenshot.png" alt="血压血糖本首页界面预览"></div>
+          <span class="preview-label">首页 · 今日记录</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="shell" id="start">
+      <div class="cta">
+        <h2>从今天开始，给每一次测量留个位置。</h2>
+        <p>一条记录很轻，但连续的记录会慢慢变成你和家人都看得懂的健康线索。</p>
+        <a class="button button-primary" href="#top">回到顶部　↑</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="shell site-footer">
+    <div class="footer-line"><span>© 2026 血压血糖本</span><span>记录日常，了解身体。</span></div>
+  </footer>
+
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="preview-title" aria-hidden="true">
+    <div class="modal-card">
+      <button class="modal-close" aria-label="关闭预览">×</button>
+      <h2 class="modal-title" id="preview-title">产品界面预览</h2>
+      <div class="preview-options">
+        <button class="preview-option"><img src="UI_DESIGN/Home-screenshot.png" alt="首页界面"><span>首页 · 记录概览</span></button>
+        <button class="preview-option"><img src="UI_DESIGN/设计图/报告-统计.png" alt="报告统计页界面"><span>报告 · 趋势统计</span></button>
+        <button class="preview-option"><img src="UI_DESIGN/设计图/报告-表格.png" alt="报告表格页界面"><span>报告 · 历史表格</span></button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const menuButton = document.querySelector('.menu-button');
+    const navLinks = document.querySelector('.nav-links');
+    const modal = document.querySelector('.modal');
+    const previewButton = document.querySelector('[data-open-preview]');
+    const closeButton = document.querySelector('.modal-close');
+
+    menuButton.addEventListener('click', () => {
+      const open = navLinks.classList.toggle('is-open');
+      menuButton.setAttribute('aria-expanded', String(open));
+    });
+
+    navLinks.addEventListener('click', (event) => {
+      if (event.target.closest('a')) {
+        navLinks.classList.remove('is-open');
+        menuButton.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    function openModal() {
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('modal-open');
+      closeButton.focus();
+    }
+
+    function closeModal() {
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('modal-open');
+      previewButton.focus();
+    }
+
+    previewButton.addEventListener('click', openModal);
+    closeButton.addEventListener('click', closeModal);
+    modal.addEventListener('click', (event) => { if (event.target === modal) closeModal(); });
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && modal.classList.contains('is-open')) closeModal(); });
+  </script>
+</body>
+</html>
