@@ -251,6 +251,9 @@
     .cta .button-primary { color: var(--green-deep); background: #d5f8e6; box-shadow: none; }
     .site-footer { padding: 0 0 30px; color: var(--ink-soft); font-size: 12px; }
     .footer-line { display: flex; justify-content: space-between; gap: 20px; padding-top: 22px; border-top: 1px solid var(--line); }
+    .footer-links { display: inline-flex; align-items: center; gap: 16px; }
+    .footer-links a { color: var(--green-deep); font-weight: 700; }
+    .footer-links a:hover { color: var(--green); }
 
     .modal { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 24px; background: rgba(5, 35, 31, .58); opacity: 0; pointer-events: none; transition: opacity .25s ease; }
     .modal.is-open { opacity: 1; pointer-events: auto; }
@@ -422,7 +425,14 @@
   </main>
 
   <footer class="shell site-footer">
-    <div class="footer-line"><span>© 2026 血压血糖本</span><span>记录日常，了解身体。</span></div>
+    <div class="footer-line">
+      <span>© 2026 血压血糖本</span>
+      <span class="footer-links">
+        <a href="healthnote-assets/user-agreement.html">用户协议</a>
+        <a href="healthnote-assets/privacy-policy.html">隐私协议</a>
+        <span>记录日常，了解身体。</span>
+      </span>
+    </div>
   </footer>
 
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="preview-title" aria-hidden="true">
